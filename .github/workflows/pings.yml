@@ -1,0 +1,28 @@
+name: Ping a mis servicios cada 5 minutos
+
+on:
+  schedule:
+    # Se ejecuta cada 5 minutos
+    - cron: '*/5 * * * *'
+  # Opcional: también puedes ejecutarlo manualmente desde la interfaz de GitHub
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hacer ping a múltiples URLs
+        run: |
+          # Lista de URLs a las que hacer ping (separadas por espacio)
+          URLs=(
+            "https://tu-bot-telegram.onrender.com"
+            "https://tu-otra-app.herokuapp.com"
+            "https://tu-sitio-web.netlify.app"
+          )
+          
+          for url in "${URLs[@]}"; do
+            echo "Pinging $url ..."
+            # Usamos curl con opciones para seguir redirecciones (-L), tiempo de espera máximo (--max-time) y mostrar código de respuesta
+            curl -L --max-time 10 -o /dev/null -s -w "%{http_code}\n" "$url" || echo "Error al conectar con $url"
+            echo "---"
+          done
